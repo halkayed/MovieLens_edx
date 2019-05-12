@@ -1,0 +1,670 @@
+\documentclass[]{article}
+\usepackage{lmodern}
+\usepackage{amssymb,amsmath}
+\usepackage{ifxetex,ifluatex}
+\usepackage{fixltx2e} % provides \textsubscript
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+\else % if luatex or xelatex
+  \ifxetex
+    \usepackage{mathspec}
+  \else
+    \usepackage{fontspec}
+  \fi
+  \defaultfontfeatures{Ligatures=TeX,Scale=MatchLowercase}
+\fi
+% use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+% use microtype if available
+\IfFileExists{microtype.sty}{%
+\usepackage{microtype}
+\UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\usepackage[margin=0.25in]{geometry}
+\usepackage{hyperref}
+\hypersetup{unicode=true,
+            pdftitle={edx - Movie Lens Project},
+            pdfauthor={Hesham Al Kayed},
+            pdfborder={0 0 0},
+            breaklinks=true}
+\urlstyle{same}  % don't use monospace font for urls
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.77,0.63,0.00}{#1}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\usepackage{longtable,booktabs}
+\usepackage{graphicx,grffile}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+\IfFileExists{parskip.sty}{%
+\usepackage{parskip}
+}{% else
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt plus 2pt minus 1pt}
+}
+\setlength{\emergencystretch}{3em}  % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{5}
+% Redefines (sub)paragraphs to behave more like sections
+\ifx\paragraph\undefined\else
+\let\oldparagraph\paragraph
+\renewcommand{\paragraph}[1]{\oldparagraph{#1}\mbox{}}
+\fi
+\ifx\subparagraph\undefined\else
+\let\oldsubparagraph\subparagraph
+\renewcommand{\subparagraph}[1]{\oldsubparagraph{#1}\mbox{}}
+\fi
+
+%%% Use protect on footnotes to avoid problems with footnotes in titles
+\let\rmarkdownfootnote\footnote%
+\def\footnote{\protect\rmarkdownfootnote}
+
+%%% Change title format to be more compact
+\usepackage{titling}
+
+% Create subtitle command for use in maketitle
+\providecommand{\subtitle}[1]{
+  \posttitle{
+    \begin{center}\large#1\end{center}
+    }
+}
+
+\setlength{\droptitle}{-2em}
+
+  \title{edx - Movie Lens Project}
+    \pretitle{\vspace{\droptitle}\centering\huge}
+  \posttitle{\par}
+    \author{Hesham Al Kayed}
+    \preauthor{\centering\large\emph}
+  \postauthor{\par}
+      \predate{\centering\large\emph}
+  \postdate{\par}
+    \date{18 April 2019}
+
+\usepackage{float}
+\floatplacement{figure}{H}
+
+\begin{document}
+\maketitle
+
+\section{Introduction}\label{introduction}
+
+~~~ This Project is part of \emph{edx - Data Science course}\footnote{\url{https://www.edx.org/professional-certificate/harvardx-data-science}}
+, in which we want to build a recommendation model using the
+\emph{MovieLens} dataset. \emph{A recommender system is a subclass of
+information filtering system that seeks to predict the ``rating'' or
+``preference'' a user would give to an item. They are primarily used in
+commercial applications.} \footnote{\url{https://en.wikipedia.org/wiki/Recommender_system}}
+
+~~~ In our case, we want to predict the rating a user would give to a
+given movie based on the provided dataset, in this project we are
+provided with a pre-wrangled version of \emph{MovieLens} dataset which
+can be obtained using code in \texttt{code.1}. to build our model this
+dataset will still need extra formatting as described in
+\texttt{Section\ 2.1}. Our first step to build our model is to
+understand data at hand; we need to explore our dataset, and find out
+the distribution of our predictors and how they affect movie ratings,
+\texttt{Section\ 2.2} explore the relation between between movie ratings
+and other predictors.
+
+~~~ In \texttt{Section\ 3} we build a model based on the effect, or the
+average error each predictor contributed to the distance between the
+actual rating and the over all average. only the \emph{user},
+\emph{movie} and \emph{year} effect are considered, because of the
+limitations on the used PC, and as we will see ,only using these three
+parameters will achieve the required model performance.
+
+\section{Exploratory data analysis}\label{exploratory-data-analysis}
+
+\subsection{Data Structer}\label{data-structer}
+
+~~~ Examining training set, we find that we have 9000055 rows and 6
+columns, \texttt{Table.1} shows the header of our dataset,it is logical
+to assume that each user have one review only for each movie, below code
+confirms our assumption about the uniqueness of \emph{usesrId + movieId}
+by showing no duplicates.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{edx }\OperatorTok{%>%}\StringTok{ }\KeywordTok{group_by}\NormalTok{(userId, movieId) }\OperatorTok{%>%}\StringTok{ }\KeywordTok{summarise}\NormalTok{(}\DataTypeTok{N=}\KeywordTok{n}\NormalTok{()) }\OperatorTok{%>%}\StringTok{ }\KeywordTok{filter}\NormalTok{(N }\OperatorTok{>}\DecValTok{1}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}lrrrrll@{}}
+\caption{Training Set Header}\tabularnewline
+\toprule
+& userId & movieId & rating & timestamp & title & genres\tabularnewline
+\midrule
+\endfirsthead
+\toprule
+& userId & movieId & rating & timestamp & title & genres\tabularnewline
+\midrule
+\endhead
+1 & 1 & 122 & 5 & 838985046 & Boomerang (1992) &
+Comedy\textbar{}Romance\tabularnewline
+2 & 1 & 185 & 5 & 838983525 & Net, The (1995) &
+Action\textbar{}Crime\textbar{}Thriller\tabularnewline
+4 & 1 & 292 & 5 & 838983421 & Outbreak (1995) &
+Action\textbar{}Drama\textbar{}Sci-Fi\textbar{}Thriller\tabularnewline
+5 & 1 & 316 & 5 & 838983392 & Stargate (1994) &
+Action\textbar{}Adventure\textbar{}Sci-Fi\tabularnewline
+6 & 1 & 329 & 5 & 838983392 & Star Trek: Generations (1994) &
+Action\textbar{}Adventure\textbar{}Drama\textbar{}Sci-Fi\tabularnewline
+7 & 1 & 355 & 5 & 838984474 & Flintstones, The (1994) &
+Children\textbar{}Comedy\textbar{}Fantasy\tabularnewline
+\bottomrule
+\end{longtable}
+
+\emph{title} column holds the title of the movie and the year it was
+aired, separation of title and year will be more useful. \emph{genres}\\
+is stored as a string which can be separated by ``\textbar{}'', after
+separating genres we find 20 unique genres. \emph{timestamp} should be
+changed to a readable format, and for the sake of simplicity only the
+year will be considered.
+
+\begin{longtable}[]{@{}lllllll@{}}
+\caption{Types and Missing Data}\tabularnewline
+\toprule
+& userId & movieId & rating & timestamp & title & genres\tabularnewline
+\midrule
+\endfirsthead
+\toprule
+& userId & movieId & rating & timestamp & title & genres\tabularnewline
+\midrule
+\endhead
+Type & integer & double & double & integer & character &
+character\tabularnewline
+NA & 0 & 0 & 0 & 0 & 0 & 0\tabularnewline
+Empty & 0 & 0 & 0 & 0 & 0 & 0\tabularnewline
+\bottomrule
+\end{longtable}
+
+\texttt{Table.2} shows that training data is complete with no missing or
+empty records.
+
+\newpage
+
+~~~
+
+\begin{longtable}[]{@{}rrrlllr@{}}
+\caption{EDX Header After Formating}\tabularnewline
+\toprule
+userId & movieId & rating & timestamp & title & genres &
+year\tabularnewline
+\midrule
+\endfirsthead
+\toprule
+userId & movieId & rating & timestamp & title & genres &
+year\tabularnewline
+\midrule
+\endhead
+1 & 122 & 5 & 9710 & Boomerang & c(``Comedy'', ``Romance'') &
+1992\tabularnewline
+1 & 185 & 5 & 9710 & Net, The & c(``Action'', ``Crime'', ``Thriller'') &
+1995\tabularnewline
+1 & 292 & 5 & 9710 & Outbreak & c(``Action'', ``Drama'', ``Sci-Fi'',
+``Thriller'') & 1995\tabularnewline
+1 & 316 & 5 & 9710 & Stargate & c(``Action'', ``Adventure'', ``Sci-Fi'')
+& 1994\tabularnewline
+1 & 329 & 5 & 9710 & Star Trek: Generations & c(``Action'',
+``Adventure'', ``Drama'', ``Sci-Fi'') & 1994\tabularnewline
+1 & 355 & 5 & 9710 & Flintstones, The & c(``Children'', ``Comedy'',
+``Fantasy'') & 1994\tabularnewline
+\bottomrule
+\end{longtable}
+
+\subsection{Data Description}\label{data-description}
+
+The purposes of this study is to build a model to predict movie ratings
+that will be given by a given user, so we will start there.
+
+\begin{longtable}[]{@{}rrrrrr@{}}
+\caption{Ratings Summary}\tabularnewline
+\toprule
+Min. & 1st Qu. & Median & Mean & 3rd Qu. & Max.\tabularnewline
+\midrule
+\endfirsthead
+\toprule
+Min. & 1st Qu. & Median & Mean & 3rd Qu. & Max.\tabularnewline
+\midrule
+\endhead
+0.5 & 3 & 4 & 3.512465 & 4 & 5\tabularnewline
+\bottomrule
+\end{longtable}
+
+\begin{longtable}[]{@{}lrrrrrrrrrr@{}}
+\toprule
+& 0.5 & 1 & 1.5 & 2 & 2.5 & 3 & 3.5 & 4 & 4.5 & 5\tabularnewline
+\midrule
+\endhead
+\% & 0.95 & 3.84 & 1.18 & 7.9 & 3.7 & 23.57 & 8.8 & 28.76 & 5.85 &
+15.45\tabularnewline
+\bottomrule
+\end{longtable}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Users tened to rate in whole numbers insted of fractions.}
+\item
+  \textbf{Most ratings are above 2.5 .}
+\item
+  \textbf{Highest rating used is 4.0 followed by 3.0 and 5.0.}
+\end{itemize}
+
+\begin{figure}
+
+{\centering \includegraphics{Report_files/figure-latex/Numer of reviews per year-1} 
+
+}
+
+\caption{Numer of reviews per year}\label{fig:Numer of reviews per year}
+\end{figure}
+
+\newpage
+
+Looking at \texttt{Fig.1}, we can see that even after breaking
+\emph{rating} description in \texttt{Table.4} into a year based summary,
+that the same pattern holds, which is most reviews averaged at
+\textbf{4.0} followed by \textbf{3.0} and \textbf{5.0}, which shows that
+in general people tends to give above average ratings. \texttt{Fig.2}
+verifies this assumption.
+
+\begin{figure}
+
+{\centering \includegraphics{Report_files/figure-latex/unnamed-chunk-8-1} 
+
+}
+
+\caption{User Avrage Rating}\label{fig:unnamed-chunk-8}
+\end{figure}
+
+Also we can see that some users gave an average rating above
+\textbf{4.5}, which means they like every movie they watch, and others
+tend to dislike every movie they like. looking at \texttt{Fig.3}, we can
+see that users who gave an average above \textbf{4.5} are more
+consistent with their ratings (\emph{low standard deviation}) compared
+to low average users.
+
+\begin{figure}
+
+{\centering \includegraphics{Report_files/figure-latex/unnamed-chunk-9-1} 
+
+}
+
+\caption{Rating Spread Per User}\label{fig:unnamed-chunk-9}
+\end{figure}
+
+\newpage
+
+by examining reviews \emph{timestamps}, we can see that all reviews was
+taken from 1995, 2009, looking at \texttt{Fig.4} we can see that most
+users tends to review the most recent movies. and not all users are
+interested in classical movies.
+
+\begin{figure}
+
+{\centering \includegraphics{Report_files/figure-latex/unnamed-chunk-10-1} 
+
+}
+
+\caption{Decade Popularity}\label{fig:unnamed-chunk-10}
+\end{figure}
+
+Examining available movies, we find that there are 10677 unique titles.
+from which 6titles have perfect score. but as we can see in
+\texttt{Table.6}, these movies have one or two reviews only, and if we
+filter for movies with a standard deviation less than \textbf{0.01} we
+get a range of Reviews per movie between 2, 4; this give us the
+indication that movies with low number of reviews will give unreliable
+results; filtering for movies with more than ten reviews, we get
+\texttt{table.7} which makes much more sense.
+
+\begin{longtable}[]{@{}rlrrr@{}}
+\caption{Top Movies With The Highest Average}\tabularnewline
+\toprule
+movieId & title & Number\_Reviews & Avgerage\_Rating &
+Standard\_Deviation\tabularnewline
+\midrule
+\endfirsthead
+\toprule
+movieId & title & Number\_Reviews & Avgerage\_Rating &
+Standard\_Deviation\tabularnewline
+\midrule
+\endhead
+3226 & Hellhounds on My Trail & 1 & 5 & NA\tabularnewline
+33264 & Satan's Tango (Sátántangó) & 2 & 5 & 0\tabularnewline
+42783 & Shadows of Forgotten Ancestors & 1 & 5 & NA\tabularnewline
+51209 & Fighting Elegy (Kenka erejii) & 1 & 5 & NA\tabularnewline
+53355 & Sun Alley (Sonnenallee) & 1 & 5 & NA\tabularnewline
+64275 & Blue Light, The (Das Blaue Licht) & 1 & 5 & NA\tabularnewline
+\bottomrule
+\end{longtable}
+
+\begin{longtable}[]{@{}rlrrr@{}}
+\caption{Top Movies With The Highest Average; N \textgreater{}
+10}\tabularnewline
+\toprule
+movieId & title & Number\_Reviews & Avgerage\_Rating &
+Standard\_Deviation\tabularnewline
+\midrule
+\endfirsthead
+\toprule
+movieId & title & Number\_Reviews & Avgerage\_Rating &
+Standard\_Deviation\tabularnewline
+\midrule
+\endhead
+318 & Shawshank Redemption, The & 28015 & 4.46 & 0.72\tabularnewline
+858 & Godfather, The & 17747 & 4.42 & 0.81\tabularnewline
+50 & Usual Suspects, The & 21648 & 4.37 & 0.76\tabularnewline
+527 & Schindler's List & 23193 & 4.36 & 0.81\tabularnewline
+904 & Rear Window & 7935 & 4.32 & 0.73\tabularnewline
+912 & Casablanca & 11232 & 4.32 & 0.82\tabularnewline
+\bottomrule
+\end{longtable}
+
+\newpage
+
+\begin{figure}
+
+{\centering \includegraphics{Report_files/figure-latex/unnamed-chunk-12-1} 
+
+}
+
+\caption{Rating Spread Per Movie}\label{fig:unnamed-chunk-12}
+\end{figure}
+
+As we can see in \texttt{Fig.5}, movie ratings has an average standard
+deviation of 0.97, and a mean of 3.21. movies that are above average
+have a lower deviation compared to below average movies.
+
+\subsection{Conclusions}\label{conclusions}
+
+\begin{itemize}
+\tightlist
+\item
+  Users tends to give ratings above the center of used scale
+  \textbf{2.5}, at an average of \textbf{3.5}.
+\item
+  In general, the most used rating is \textbf{4.0}, and this trend is
+  followed regardless of the year.
+\item
+  Users differ in their ratings, but it can be summarized that the more
+  a user is consistent with their rating the higher the average rating
+  they give, but the same does not apply for users with high deviation
+  in their ratings.
+\item
+  New movies are more popular than classical ones, still classical
+  movies have their base of users.
+\item
+  as in users, in general movies with low deviation have higher ratings.
+\end{itemize}
+
+\newpage
+
+\section{Buliding Model}\label{buliding-model}
+
+\subsection{Formlation}\label{formlation}
+
+I am going to build a model as described in edx - Data Science: Machine
+Learning - Recommendation Systems. we will set \(Y\) as the actual
+rating, \(\mu\) as the over all average, \(\epsilon\) as the error or
+distance from \(\mu\). which can be interpreted as, \emph{all moveis
+should have a rating of} \(\mu\), \emph{but for some effect}
+\(\epsilon\), \emph{the rating deviates to} \(Y\).
+\[Y = \mu + \epsilon \] from our data exploration we can break
+\(\epsilon\) into \emph{user effect} \(b_u\), \emph{movie effect}
+\(b_i\) and \emph{year effect} \(b_y\), which leaves us with. \[
+Y= \mu + b_i + b_u + b_y 
+\]
+
+above model assumes that there are only three effects, which we know
+from experience that is not correct, to counter that we add \(\epsilon\)
+as random error. \[
+Y = \mu + b_i + b_u + b_y + \epsilon  \Rightarrow Y = Y_{hat}+\epsilon
+\]
+
+\subsection{Calculating Effects}\label{calculating-effects}
+
+by including \(b_u\) and \(b_y\) in the random error parameter, we can
+assume that, \[
+b_i + \epsilon  = Y - \mu 
+\] so we can calculate \(b_i\) using below code,
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Calculationg over all rating avrage.}
+\NormalTok{mu <-}\KeywordTok{mean}\NormalTok{(edx}\OperatorTok{$}\NormalTok{rating)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Calculating movie effect}
+\NormalTok{movie_avg <-}\StringTok{ }\NormalTok{edx }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\KeywordTok{group_by}\NormalTok{(movieId) }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\KeywordTok{summarise}\NormalTok{(}\DataTypeTok{b_i =} \KeywordTok{mean}\NormalTok{(rating }\OperatorTok{-}\StringTok{ }\NormalTok{mu))}
+\end{Highlighting}
+\end{Shaded}
+
+as we now have an estimation for \(b_i\), we can estimate \(b_u\) and
+keep the year effect as part of our random error parameter, \[
+b_u + \epsilon = Y - \mu - b_i
+\]
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Calculating user effect}
+\NormalTok{user_avg  <-}\StringTok{ }\NormalTok{edx }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\KeywordTok{left_join}\NormalTok{(movie_avg, }\DataTypeTok{by =} \StringTok{"movieId"}\NormalTok{) }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{group_by}\NormalTok{(userId) }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\KeywordTok{summarise}\NormalTok{(}\DataTypeTok{b_u=} \KeywordTok{mean}\NormalTok{(rating }\OperatorTok{-}\StringTok{ }\NormalTok{mu }\OperatorTok{-}\StringTok{ }\NormalTok{b_i))}
+\end{Highlighting}
+\end{Shaded}
+
+and the same goes for year effect \(b_y\), \[
+b_y + \epsilon = Y - \mu - b_i - b_u
+\]
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Calculating year effect}
+\NormalTok{year_avg  <-}\StringTok{ }\NormalTok{edx }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\KeywordTok{left_join}\NormalTok{(movie_avg, }\DataTypeTok{by =} \StringTok{"movieId"}\NormalTok{) }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{left_join}\NormalTok{(user_avg, }\DataTypeTok{by=} \StringTok{"userId"}\NormalTok{) }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{group_by}\NormalTok{(year) }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\KeywordTok{summarise}\NormalTok{(}\DataTypeTok{b_y=} \KeywordTok{mean}\NormalTok{(rating }\OperatorTok{-}\StringTok{ }\NormalTok{mu }\OperatorTok{-}\StringTok{ }\NormalTok{b_i }\OperatorTok{-}\StringTok{ }\NormalTok{b_u))}
+\end{Highlighting}
+\end{Shaded}
+
+Based on our assumption, we know that \(Y_{hat} = \mu +b_i+b_u+b_y\); so
+we need to collect the above calculated effects and add them together,
+below function will facilitates that.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# takes df with the same structure as edx}
+\CommentTok{# returns input df binded with b_i, b_u, b_y and predicted rating y_hat}
+
+\NormalTok{PredictRating <-}\StringTok{ }\ControlFlowTok{function}\NormalTok{(df)\{}
+\NormalTok{  df }\OperatorTok{%>%}
+\StringTok{    }\KeywordTok{left_join}\NormalTok{(movie_avg, }\DataTypeTok{by =} \StringTok{"movieId"}\NormalTok{) }\OperatorTok{%>%}\StringTok{ }\CommentTok{# collect movie effect}
+\StringTok{    }\KeywordTok{left_join}\NormalTok{(user_avg, }\DataTypeTok{by=}\StringTok{"userId"}\NormalTok{) }\OperatorTok{%>%}\StringTok{     }\CommentTok{# collect user effect}
+\StringTok{    }\KeywordTok{left_join}\NormalTok{(year_avg, }\DataTypeTok{by =} \StringTok{"year"}\NormalTok{) }\OperatorTok{%>%}\StringTok{     }\CommentTok{# collect year effect}
+\StringTok{    }\KeywordTok{mutate}\NormalTok{(}\DataTypeTok{y_hat =}\NormalTok{ mu }\OperatorTok{+}\StringTok{ }\NormalTok{b_i  }\OperatorTok{+}\StringTok{ }\NormalTok{b_u }\OperatorTok{+}\StringTok{ }\NormalTok{b_y,    }\CommentTok{# calculate y_hat}
+           \DataTypeTok{y_hat =} \KeywordTok{if_else}\NormalTok{(y_hat }\OperatorTok{>}\StringTok{  }\DecValTok{5}\NormalTok{ ,  }\FloatTok{5.0}\NormalTok{, y_hat), }\CommentTok{# make sure that our predictions are within range}
+           \DataTypeTok{y_hat =} \KeywordTok{if_else}\NormalTok{(y_hat }\OperatorTok{<}\StringTok{ }\FloatTok{0.5}\NormalTok{ , }\FloatTok{0.5}\NormalTok{, y_hat))\} }\CommentTok{# make sure that our predictions are within range}
+\end{Highlighting}
+\end{Shaded}
+
+\subsection{Model Performance}\label{model-performance}
+
+Model performance is measured in \texttt{RMSE} \footnote{\url{https://en.wikipedia.org/wiki/Root-mean-square_deviation}},
+where \(N\) is the number of records.
+
+\[
+RMSE = \sqrt {\frac{\sum_{}^{N} (Y - Y_{hat})^2}{N}}
+\]
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{edx }\OperatorTok{%<>%}\StringTok{ }\KeywordTok{PredictRating}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}lrr@{}}
+\caption{Model Performance; Test Set}\tabularnewline
+\toprule
+Included.Effects & RMSE & Improvment\tabularnewline
+\midrule
+\endfirsthead
+\toprule
+Included.Effects & RMSE & Improvment\tabularnewline
+\midrule
+\endhead
+mu & 1.0603313 & 0.00\tabularnewline
+mu + b\_i & 0.9423475 & 11.13\tabularnewline
+mu + b\_i + b\_u & 0.8567039 & 9.09\tabularnewline
+mu + b\_i + b\_u + b\_y & 0.8563777 & 0.04\tabularnewline
+\bottomrule
+\end{longtable}
+
+RMSE score is under the required \textbf{0.9}.
+
+apply the same formatting to the test set, then applying \emph{predict
+function} we get.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{validation}\OperatorTok{%<>%}\StringTok{ }\KeywordTok{PredictRating}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}lrr@{}}
+\caption{Model Performance; Test Set}\tabularnewline
+\toprule
+Included.Effects & RMSE & Improvment\tabularnewline
+\midrule
+\endfirsthead
+\toprule
+Included.Effects & RMSE & Improvment\tabularnewline
+\midrule
+\endhead
+mu & 1.0612018 & 0.00\tabularnewline
+mu + b\_i & 0.9439087 & 11.05\tabularnewline
+mu + b\_i + b\_u & 0.8653488 & 8.32\tabularnewline
+mu + b\_i + b\_u + b\_y & 0.8650043 & 0.04\tabularnewline
+\bottomrule
+\end{longtable}
+
+\begin{figure}
+
+{\centering \includegraphics{Report_files/figure-latex/Error-1} 
+
+}
+
+\caption{Error Distribution, training set}\label{fig:Error}
+\end{figure}
+
+\newpage
+
+\section{Reference Code - Get
+Datasets}\label{reference-code---get-datasets}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{#############################################################}
+\CommentTok{# Create edx set, validation set, and submission file}
+\NormalTok{#############################################################}
+
+\CommentTok{# Note: this process could take a couple of minutes}
+
+\ControlFlowTok{if}\NormalTok{(}\OperatorTok{!}\KeywordTok{require}\NormalTok{(tidyverse)) }\KeywordTok{install.packages}\NormalTok{(}\StringTok{"tidyverse"}\NormalTok{, }\DataTypeTok{repos =} \StringTok{"http://cran.us.r-project.org"}\NormalTok{)}
+\ControlFlowTok{if}\NormalTok{(}\OperatorTok{!}\KeywordTok{require}\NormalTok{(caret)) }\KeywordTok{install.packages}\NormalTok{(}\StringTok{"caret"}\NormalTok{, }\DataTypeTok{repos =} \StringTok{"http://cran.us.r-project.org"}\NormalTok{)}
+
+\CommentTok{# MovieLens 10M dataset:}
+\CommentTok{# https://grouplens.org/datasets/movielens/10m/}
+\CommentTok{# http://files.grouplens.org/datasets/movielens/ml-10m.zip}
+
+\NormalTok{dl <-}\StringTok{ }\KeywordTok{tempfile}\NormalTok{()}
+\KeywordTok{download.file}\NormalTok{(}\StringTok{"http://files.grouplens.org/datasets/movielens/ml-10m.zip"}\NormalTok{, dl)}
+
+\NormalTok{ratings <-}\StringTok{ }\KeywordTok{read.table}\NormalTok{(}\DataTypeTok{text =} \KeywordTok{gsub}\NormalTok{(}\StringTok{"::"}\NormalTok{, }\StringTok{"}\CharTok{\textbackslash{}t}\StringTok{"}\NormalTok{, }\KeywordTok{readLines}\NormalTok{(}\KeywordTok{unzip}\NormalTok{(dl, }\StringTok{"ml-10M100K/ratings.dat"}\NormalTok{))),}
+                      \DataTypeTok{col.names =} \KeywordTok{c}\NormalTok{(}\StringTok{"userId"}\NormalTok{, }\StringTok{"movieId"}\NormalTok{, }\StringTok{"rating"}\NormalTok{, }\StringTok{"timestamp"}\NormalTok{))}
+
+\NormalTok{movies <-}\StringTok{ }\KeywordTok{str_split_fixed}\NormalTok{(}\KeywordTok{readLines}\NormalTok{(}\KeywordTok{unzip}\NormalTok{(dl, }\StringTok{"ml-10M100K/movies.dat"}\NormalTok{)), }\StringTok{"}\CharTok{\textbackslash{}\textbackslash{}}\StringTok{::"}\NormalTok{, }\DecValTok{3}\NormalTok{)}
+\KeywordTok{colnames}\NormalTok{(movies) <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\StringTok{"movieId"}\NormalTok{, }\StringTok{"title"}\NormalTok{, }\StringTok{"genres"}\NormalTok{)}
+\NormalTok{movies <-}\StringTok{ }\KeywordTok{as.data.frame}\NormalTok{(movies) }\OperatorTok{%>%}\StringTok{ }\KeywordTok{mutate}\NormalTok{(}\DataTypeTok{movieId =} \KeywordTok{as.numeric}\NormalTok{(}\KeywordTok{levels}\NormalTok{(movieId))[movieId],}
+                                           \DataTypeTok{title =} \KeywordTok{as.character}\NormalTok{(title),}
+                                           \DataTypeTok{genres =} \KeywordTok{as.character}\NormalTok{(genres))}
+
+\NormalTok{movielens <-}\StringTok{ }\KeywordTok{left_join}\NormalTok{(ratings, movies, }\DataTypeTok{by =} \StringTok{"movieId"}\NormalTok{)}
+
+\CommentTok{# Validation set will be 10% of MovieLens data}
+
+\KeywordTok{set.seed}\NormalTok{(}\DecValTok{1}\NormalTok{)}
+\NormalTok{test_index <-}\StringTok{ }\KeywordTok{createDataPartition}\NormalTok{(}\DataTypeTok{y =}\NormalTok{ movielens}\OperatorTok{$}\NormalTok{rating, }\DataTypeTok{times =} \DecValTok{1}\NormalTok{, }\DataTypeTok{p =} \FloatTok{0.1}\NormalTok{, }\DataTypeTok{list =} \OtherTok{FALSE}\NormalTok{)}
+\NormalTok{edx <-}\StringTok{ }\NormalTok{movielens[}\OperatorTok{-}\NormalTok{test_index,]}
+\NormalTok{temp <-}\StringTok{ }\NormalTok{movielens[test_index,]}
+
+\CommentTok{# Make sure userId and movieId in validation set are also in edx set}
+
+\NormalTok{validation <-}\StringTok{ }\NormalTok{temp }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\KeywordTok{semi_join}\NormalTok{(edx, }\DataTypeTok{by =} \StringTok{"movieId"}\NormalTok{) }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{semi_join}\NormalTok{(edx, }\DataTypeTok{by =} \StringTok{"userId"}\NormalTok{)}
+
+\CommentTok{# Add rows removed from validation set back into edx set}
+
+\NormalTok{removed <-}\StringTok{ }\KeywordTok{anti_join}\NormalTok{(temp, validation)}
+\NormalTok{edx <-}\StringTok{ }\KeywordTok{rbind}\NormalTok{(edx, removed)}
+
+\KeywordTok{rm}\NormalTok{(dl, ratings, movies, test_index, temp, movielens, removed)}
+\end{Highlighting}
+\end{Shaded}
+
+
+\end{document}
