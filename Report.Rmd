@@ -1,0 +1,431 @@
+---
+title: "edx - Movie Lens Project"
+author: "Hesham Al Kayed"
+date: "12 May 2019"
+header-includes: #allows you to add in your own Latex packages
+- \usepackage{float} #use the 'float' package
+- \floatplacement{figure}{H} #make every figure with caption = h
+output: 
+  pdf_document:
+    fig_cap: yes
+    keep_tex: yes
+    number_sections: true
+geometry: margin=0.25in
+---
+```{r include=FALSE, echo=FALSE, cache=TRUE}
+load(file = 'edx.RData')
+#edx <- validation
+#rm(validation)
+```
+```{r, include=FALSE, echo=FALSE}
+library(magrittr)
+library(tidyverse)
+library(lubridate)
+library(gridExtra)
+```
+
+# Introduction
+
+&nbsp;&nbsp;&nbsp;
+This Project is part of *edx - Data Science course*^[https://www.edx.org/professional-certificate/harvardx-data-science] , in which we want to build a recommendation model using the _MovieLens_ dataset. *A recommender system is a subclass of information filtering system that seeks to predict the "rating" or "preference" a user would give to an item. They are primarily used in commercial applications.* ^[https://en.wikipedia.org/wiki/Recommender_system]
+
+
+&nbsp;&nbsp;&nbsp;
+In our case, we want to predict the rating a user would give to a given movie based on the provided dataset, in this project we are provided with a pre-wrangled version of *MovieLens* dataset which can be obtained using code in  `code.1`. to build our model this dataset will still need extra formatting as described in `Section 2.1`. Our first step to build our model is to understand data at hand; we need to explore our dataset, and find out the distribution of our predictors and how they affect movie ratings, `Section 2.2` explore the relation between between movie ratings and other predictors.
+
+&nbsp;&nbsp;&nbsp;
+In `Section 3` we build a model based on the effect, or the average error each predictor contributed to the distance between the actual rating and the over all average. only the *user*, *movie* and *year* effect are considered, because of the limitations on the used PC, and as we will see ,only using these three parameters will achieve the required model performance. 
+
+
+# Exploratory data analysis
+## Data Structer
+
+&nbsp;&nbsp;&nbsp;
+Examining training set, we find that we have `r nrow(edx)` rows and `r ncol(edx)` columns, `Table.1` shows the header of our dataset,it is logical to assume that each user have one review only for each movie, below code confirms our assumption about the uniqueness  of *usesrId + movieId* by showing no duplicates.
+
+```{r primary key, echo=TRUE, results='hide'}
+edx %>% group_by(userId, movieId) %>% summarise(N=n()) %>% filter(N >1)
+```
+
+```{r echo=FALSE,tidy=TRUE, size=2}
+knitr::kable(head(edx), caption = "Training Set Header")
+```
+
+*title* column holds the title of the movie and the year it was aired, separation of title and year will be more useful. *genres*  
+is stored as a string which can be separated by "|", after separating genres we find `r length(unique(unlist(str_split(edx$genres,'\\|'))))` unique genres. *timestamp* should be changed to a readable format, and for the sake of simplicity only the year will be considered.
+
+
+```{r, echo=FALSE}
+rbind(sapply(edx, typeof),
+      sapply(1:ncol(edx), function(c) sum(is.na(edx[,c]))),
+      sapply(1:ncol(edx), function(c) sum(edx[,c] %in% c('',' ')))) %>% set_colnames(colnames(edx)) %>% set_rownames(c('Type','NA', 'Empty')) %>% knitr::kable(caption = "Types and Missing Data")
+```
+
+`Table.2` shows that training data is complete with no missing or empty records.
+
+\newpage
+
+&nbsp;&nbsp;&nbsp;
+
+```{r,echo=FALSE}
+edx %<>% mutate(year      = str_remove(str_extract(string = title,pattern = "[:digit:]{4}\\)$"),pattern = "\\)" ) %>% as.integer(),
+                title     = str_remove(string = title, pattern = "\\([:digit:]{4}\\)$"),
+                timestamp = as_date(as_datetime(timestamp)),
+                genres    = str_split(genres, pattern = '\\|'))
+```
+```{r, echo=FALSE}
+knitr::kable(head(edx), caption = "EDX Header After Formating")
+```
+
+
+## Data Description
+The purposes of this study is to build a model to predict movie ratings that will be given by a given user, so we will start there.
+```{r, echo=FALSE}
+summary(edx$rating) %>% t() %>% knitr::kable()
+sapply(prop.table(table(edx$rating)) * 100 ,function(x) round(x,2)) %>% 
+  as.data.frame() %>% set_colnames("\\%") %>% t() %>% knitr::kable(caption = "Ratings Summary")
+```
+
+- __Users tened to rate in whole numbers insted of fractions.__
+- __Most ratings are above 2.5 .__
+- __Highest rating used is 4.0 followed by 3.0 and 5.0.__
+
+
+```{r Numer of reviews per year,echo=FALSE,fig.align='center',fig.cap="Numer of reviews per year"}
+edx %>% 
+  mutate(rating = as.factor(rating)) %>%
+  group_by(year, rating) %>% 
+  summarize(N=n()) %>%
+  ggplot(aes(x = year, y = N/1000, group=rating, col=rating))+
+  geom_line() +
+  ylab(label = 'Number of Ratings')+
+  theme(axis.text.x = element_text(angle= 90,face = "bold" ,lineheight=  10))
+```
+
+\newpage
+
+Looking at `Fig.1`, we can see that even after breaking *rating* description in `Table.4` into a year based summary, that the same pattern holds, which is most reviews averaged at **4.0** followed by **3.0** and **5.0**, which shows that in general people tends to give above average ratings. `Fig.2` verifies this assumption.  
+  
+```{r, echo=FALSE,fig.align='center', fig.cap='User Avrage Rating', fig.height=4}
+p<-edx %>%
+  group_by(userId) %>%
+  summarize(avgR = mean(rating)) %>%
+  mutate(flage = if_else(avgR<=2.5,FALSE,TRUE)) %>% select(flage) %>% 
+  summarize(above2.5=round(mean(flage)*100,2), below2.5=100-above2.5) %>% unlist()
+
+edx%>%
+  group_by(userId) %>%
+  summarize(N=n(), avgR = mean(rating)) %>%
+  mutate(flage = if_else(avgR<=2.5,FALSE,TRUE)) %>%
+  ggplot(aes(x = N, y = avgR, col=flage)) +
+  geom_point(size=0.01)+
+  xlab(label = "Number of Reviews Per User")+
+  ylab(label = "Avrage Rating Given By User")+
+  geom_hline(yintercept = 2.5, col='black')+
+  geom_text(aes(x = 6000, y = 2.6, label=paste(as.character(p[1]),'%',sep = ''), col='black'))+
+  geom_text(aes(x = 6000, y = 2.4, label=paste(as.character(p[2]),'%',sep = ''), col='black'))+
+  guides(color ="none")
+```
+
+
+Also we can see that some users gave an average rating above **4.5**, which means they like every movie they watch, and others tend to dislike every movie they like. looking at `Fig.3`, we can see that users who gave an average above **4.5** are more consistent with their ratings (*low standard deviation*) compared to low average users.
+
+
+```{r, echo=FALSE, fig.align='center', fig.cap="Rating Spread Per User", fig.height=4}
+edx %>%
+  group_by(userId) %>%
+  summarize(N=n(), avgR = mean(rating), SD=sd(rating)) %>%
+  mutate(flage = if_else(avgR>=4.5, TRUE, FALSE)) %>%
+  ggplot(aes(avgR, SD, col= flage))+
+  geom_point(size=0.01)+
+  geom_vline(xintercept = 4.5)+
+  geom_text(aes(x = 4.7, y = 2.5, label = paste(as.character( round(mean(flage)*100, 2))    , '%' ,sep = '') , col='black') )+
+  geom_text(aes(x = 4.3, y = 2.5, label = paste(as.character(100- round(mean(flage)*100, 2 )), '%' ,sep = ''), col='black') )+
+  xlab(label = "Avrage Rating Given By User" ) +
+  ylab(label = "User Standard Deviation") +
+  guides(color = 'none')
+
+```
+
+\newpage
+
+by examining reviews *timestamps*, we can see that all reviews was taken from `r range(year(edx$timestamp))`, looking at `Fig.4` we can see that most users tends to review the most recent movies. and not all users are interested in classical movies.
+
+```{r, echo=FALSE, fig.align='center', fig.cap="Decade Popularity"}
+edx %>%
+  mutate(ReviewYear = year(timestamp)) %>%
+  group_by(ReviewYear, year) %>%
+  summarize(N=n(), avgR= mean(rating)) %>%
+  mutate(period = if_else(year>=2000, 2000,floor((year-1900)/10)*10),
+         period = if_else(period==2000, "2000's",paste('19',as.character(period),"'s", sep = '')),
+         period = factor(period, levels =c("1900's","1910's","1920's","1930's","1940's",
+                                           "1950's","1960's","1970's","1980's","1990's","2000's"))) %>%
+  ggplot(aes(ReviewYear, N, fill=period))+
+  geom_bar(stat = 'identity')+
+  xlab(label = "Review Year")+
+  ylab(label = "Number Of Reviews")+
+  scale_fill_discrete(name="Decade")
+```
+
+```{r summary by movieId, echo=FALSE, include=FALSE}
+t1<-edx %>%
+  group_by(movieId,title) %>%
+  summarize(Number_Reviews= n(), Avgerage_Rating = round(mean(rating),2), Standard_Deviation = round(sd(rating), 2))
+```
+
+Examining available movies, we find that there are `r length(unique(edx$movieId))` unique titles. from which `r t1 %>% filter(Avgerage_Rating == 5) %>% nrow()`titles have perfect score. but as we can see in `Table.6`, these movies have one or two reviews only, and if we filter for movies with a standard deviation less than **0.01** we get a range of Reviews per movie between `r t1 %>% filter(Standard_Deviation <=0.01) %>% .$Number_Reviews %>% range()`; this give us the indication that movies with low number of reviews will give unreliable results; filtering for movies with more than ten reviews, we get `table.7` which makes much more sense.
+
+```{r, echo=FALSE, warning=FALSE}
+t1 %>%
+  arrange(desc(Avgerage_Rating)) %>%
+  head() %>%
+  knitr::kable(caption = "Top Movies With The Highest Average")
+
+t1 %<>% filter(Number_Reviews>10)
+
+t1 %>%
+  arrange(desc(Avgerage_Rating)) %>%
+  head() %>%
+  knitr::kable(caption = "Top Movies With The Highest Average; N > 10")
+
+```
+
+\newpage
+
+
+```{r, echo=FALSE, fig.align='center', fig.cap= "Rating Spread Per Movie", warning=FALSE}
+t1 %>%
+  ggplot(aes(Avgerage_Rating, Standard_Deviation )) +
+  geom_point(size = 0.01)+
+  geom_hline(aes(yintercept = mean(Standard_Deviation)))+
+  geom_vline(aes(xintercept = mean(Avgerage_Rating))) + 
+  xlab(label = "Average Rating Per Movie")+
+  ylab(label = "Movie Standared Deviation")
+
+```
+
+
+As we can see in `Fig.5`, movie ratings has an average standard deviation of `r round(mean(t1$Standard_Deviation),2)`, and a mean of `r round(mean(t1$Avgerage_Rating),2)`. movies that are above average have a lower deviation compared to below average movies.
+
+
+## Conclusions
+
+- Users tends to give ratings above the center of used scale **2.5**, at an average of **3.5**.
+- In general, the most used rating is **4.0**, and this trend is followed regardless of the year.
+- Users differ in their ratings, but it can be summarized that the more a user is consistent with their rating the higher the average rating they give, but the same does not apply for users with high deviation in their ratings.
+- New movies are more popular than classical ones, still classical movies have their base of users.
+- as in users, in general movies with low deviation have higher ratings.
+
+
+\newpage
+
+# Buliding Model
+## Formlation
+
+I am going to build a model as described in edx - Data Science: Machine Learning - Recommendation Systems. we will set $Y$ as the actual rating, $\mu$ as the over all average, $\epsilon$ as the error or distance from $\mu$. which can be interpreted as, *all moveis should have a rating of* $\mu$, *but for some effect* $\epsilon$, *the rating deviates to* $Y$.
+$$Y = \mu + \epsilon $$
+from our data exploration we can break $\epsilon$ into *user effect* $b_u$, *movie effect* $b_i$ and *year effect* $b_y$, which leaves us with.
+$$
+Y= \mu + b_i + b_u + b_y 
+$$
+
+above model assumes that there are only three effects, which we know from experience that is not correct, to counter that we add $\epsilon$ as random error.
+$$
+Y = \mu + b_i + b_u + b_y + \epsilon  \Rightarrow Y = Y_{hat}+\epsilon
+$$
+
+## Calculating Effects
+by including $b_u$ and $b_y$ in the random error parameter, we can assume that,
+$$
+b_i + \epsilon  = Y - \mu 
+$$
+so we can calculate $b_i$ using below code, 
+```{r mu}
+# Calculationg over all rating avrage.
+mu <-mean(edx$rating)
+```
+```{r Movie Effect}
+# Calculating movie effect
+movie_avg <- edx %>% 
+  group_by(movieId) %>% 
+  summarise(b_i = mean(rating - mu))
+```
+```{r include=FALSE}
+gc()
+```
+
+as we now have an estimation for $b_i$, we can estimate $b_u$ and keep the year effect as part of our random error parameter,
+$$
+b_u + \epsilon = Y - \mu - b_i
+$$
+```{r User Effect}
+# Calculating user effect
+user_avg  <- edx %>% 
+  left_join(movie_avg, by = "movieId") %>%
+  group_by(userId) %>% 
+  summarise(b_u= mean(rating - mu - b_i))
+```
+```{r include=FALSE}
+gc()
+```
+
+and the same goes for year effect $b_y$,
+$$
+b_y + \epsilon = Y - \mu - b_i - b_u
+$$
+```{r Year Effect}
+# Calculating year effect
+year_avg  <- edx %>% 
+  left_join(movie_avg, by = "movieId") %>%
+  left_join(user_avg, by= "userId") %>%
+  group_by(year) %>% 
+  summarise(b_y= mean(rating - mu - b_i - b_u))
+```
+```{r include=FALSE}
+gc()
+```
+
+
+Based on our assumption, we know that $Y_{hat} = \mu +b_i+b_u+b_y$; so we need to collect the above calculated effects and add them together, below function will facilitates that.
+```{r Predict Function}
+# takes df with the same structure as edx
+# returns input df binded with b_i, b_u, b_y and predicted rating y_hat
+
+PredictRating <- function(df){
+  df %>%
+    left_join(movie_avg, by = "movieId") %>% # collect movie effect
+    left_join(user_avg, by="userId") %>%     # collect user effect
+    left_join(year_avg, by = "year") %>%     # collect year effect
+    mutate(y_hat = mu + b_i  + b_u + b_y,    # calculate y_hat
+           y_hat = if_else(y_hat >  5 ,  5.0, y_hat), # make sure that our predictions are within range
+           y_hat = if_else(y_hat < 0.5 , 0.5, y_hat))} # make sure that our predictions are within range
+```
+
+## Model Performance
+Model performance is measured in `RMSE` ^[https://en.wikipedia.org/wiki/Root-mean-square_deviation], where $N$ is the number of records.
+
+$$
+RMSE = \sqrt {\frac{\sum_{}^{N} (Y - Y_{hat})^2}{N}}
+$$
+```{r Predicting Rating}
+edx %<>% PredictRating()
+```
+```{r RMSE edx, echo=FALSE}
+rmse_mu  <- caret::RMSE(edx$rating, mu)
+rmse_b_i <- caret::RMSE(edx$rating, mu + edx$b_i)
+rmse_b_u <- caret::RMSE(edx$rating, mu + edx$b_i + edx$b_u)
+rmse_b_y <- caret::RMSE(edx$rating, mu + edx$b_i + edx$b_u + edx$b_y)
+```
+```{r, echo=FALSE}
+df <- data.frame(`Included Effects` = c("mu","mu + b_i","mu + b_i + b_u", "mu + b_i + b_u + b_y"),
+                 RMSE = c(rmse_mu, rmse_b_i, rmse_b_u, rmse_b_y),
+                 Improvment = c(0,round((rmse_mu - rmse_b_i)*100/rmse_mu,2),
+                                round((rmse_b_i - rmse_b_u)*100/rmse_b_i,2),
+                                round((rmse_b_u - rmse_b_y)*100/rmse_b_u,2)))
+df %>% knitr::kable(caption = "Model Performance; Test Set")
+```
+
+RMSE score is under the required **0.9**.  
+
+apply the same formatting to the test set, then applying *predict function* we get.
+
+```{r RMSE validation, echo=FALSE}
+# load test set
+load(file = 'validation.RData')
+
+# editing validation set to match edx set
+validation %<>% mutate(year      = str_remove(str_extract(string = title,pattern = "[:digit:]{4}\\)$"),pattern = "\\)" ) %>% as.integer(),
+                title     = str_remove(string = title, pattern = "\\([:digit:]{4}\\)$"),
+                timestamp = as_datetime(timestamp),
+                genres    = str_split(genres, pattern = '\\|'))
+
+```
+```{r}
+validation%<>% PredictRating()
+```
+```{r, echo=FALSE}
+# calculatiog RMSE
+rmse_mu_test  <- caret::RMSE(validation$rating, mu)
+rmse_b_i_test <- caret::RMSE(validation$rating, mu + validation$b_i)
+rmse_b_u_test <- caret::RMSE(validation$rating, mu + validation$b_i + validation$b_u)
+rmse_b_y_test <- caret::RMSE(validation$rating, mu + validation$b_i + validation$b_u + validation$b_y)
+```
+```{r, echo=FALSE}
+df <- data.frame(`Included Effects` = c("mu","mu + b_i","mu + b_i + b_u", "mu + b_i + b_u + b_y"),
+                 RMSE = c(rmse_mu_test, rmse_b_i_test, rmse_b_u_test, rmse_b_y_test),
+                 Improvment = c(0,round((rmse_mu_test - rmse_b_i_test)*100/rmse_mu_test,2),
+                                round((rmse_b_i_test - rmse_b_u_test)*100/rmse_b_i_test,2),
+                                round((rmse_b_u_test - rmse_b_y_test)*100/rmse_b_u_test,2)))
+df %>% knitr::kable(caption = "Model Performance; Test Set")
+```
+
+
+```{r Error, echo=FALSE, fig.align='center', fig.cap="Error Distribution, training set"}
+edx %<>%mutate(Error = rating - y_hat)
+
+tError<-edx %>%
+  select(Error) %>%
+  summary() %>%
+  as.data.frame() %>% 
+  select(Freq) %>%
+  set_colnames(c('Summary'))
+
+edx %>%
+  ggplot(aes(Error))+
+  geom_histogram(binwidth = 0.01)+
+  annotation_custom(tableGrob(tError), xmin = -11,ymin = 15000)
+
+```
+
+\newpage
+
+# Reference Code - Get Datasets
+
+```{r eval=FALSE, echo=TRUE}
+#############################################################
+# Create edx set, validation set, and submission file
+#############################################################
+
+# Note: this process could take a couple of minutes
+
+if(!require(tidyverse)) install.packages("tidyverse", repos = "http://cran.us.r-project.org")
+if(!require(caret)) install.packages("caret", repos = "http://cran.us.r-project.org")
+
+# MovieLens 10M dataset:
+# https://grouplens.org/datasets/movielens/10m/
+# http://files.grouplens.org/datasets/movielens/ml-10m.zip
+
+dl <- tempfile()
+download.file("http://files.grouplens.org/datasets/movielens/ml-10m.zip", dl)
+
+ratings <- read.table(text = gsub("::", "\t", readLines(unzip(dl, "ml-10M100K/ratings.dat"))),
+                      col.names = c("userId", "movieId", "rating", "timestamp"))
+
+movies <- str_split_fixed(readLines(unzip(dl, "ml-10M100K/movies.dat")), "\\::", 3)
+colnames(movies) <- c("movieId", "title", "genres")
+movies <- as.data.frame(movies) %>% mutate(movieId = as.numeric(levels(movieId))[movieId],
+                                           title = as.character(title),
+                                           genres = as.character(genres))
+
+movielens <- left_join(ratings, movies, by = "movieId")
+
+# Validation set will be 10% of MovieLens data
+
+set.seed(1)
+test_index <- createDataPartition(y = movielens$rating, times = 1, p = 0.1, list = FALSE)
+edx <- movielens[-test_index,]
+temp <- movielens[test_index,]
+
+# Make sure userId and movieId in validation set are also in edx set
+
+validation <- temp %>% 
+  semi_join(edx, by = "movieId") %>%
+  semi_join(edx, by = "userId")
+
+# Add rows removed from validation set back into edx set
+
+removed <- anti_join(temp, validation)
+edx <- rbind(edx, removed)
+
+rm(dl, ratings, movies, test_index, temp, movielens, removed)
+```
