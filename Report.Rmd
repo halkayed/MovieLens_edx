@@ -31,7 +31,7 @@ This Project is part of *edx - Data Science course*^[https://www.edx.org/profess
 
 
 &nbsp;&nbsp;&nbsp;
-In our case, we want to predict the rating a user would give to a given movie based on the provided dataset, in this project we are provided with a pre-wrangled version of *MovieLens* dataset which can be obtained using code in  `code.1`. to build our model this dataset will still need extra formatting as described in `Section 2.1`. Our first step to build our model is to understand data at hand; we need to explore our dataset, and find out the distribution of our predictors and how they affect movie ratings, `Section 2.2` explore the relation between between movie ratings and other predictors.
+In our case, we want to predict the rating a user would give to a given movie based on the provided dataset, in this project we are provided with a pre-wrangled version of *MovieLens* dataset which can be obtained using code in  `Section.4`. to build our model this dataset will still need extra formatting as described in `Section 2.1`. Our first step to build our model is to understand data at hand; we need to explore our dataset, and find out the distribution of our predictors and how they affect movie ratings, `Section 2.2` explore the relation between between movie ratings and other predictors.
 
 &nbsp;&nbsp;&nbsp;
 In `Section 3` we build a model based on the effect, or the average error each predictor contributed to the distance between the actual rating and the over all average. only the *user*, *movie* and *year* effect are considered, because of the limitations on the used PC, and as we will see ,only using these three parameters will achieve the required model performance. 
@@ -210,7 +210,7 @@ As we can see in `Fig.5`, movie ratings has an average standard deviation of `r 
 
 ## Conclusions
 
-- Users tends to give ratings above the center of used scale **2.5**, at an average of **3.5**.
+- Users tends to give ratings above the center of the used scale;**2.5**. at an average of **3.5**.
 - In general, the most used rating is **4.0**, and this trend is followed regardless of the year.
 - Users differ in their ratings, but it can be summarized that the more a user is consistent with their rating the higher the average rating they give, but the same does not apply for users with high deviation in their ratings.
 - New movies are more popular than classical ones, still classical movies have their base of users.
@@ -319,7 +319,7 @@ rmse_b_y <- caret::RMSE(edx$rating, mu + edx$b_i + edx$b_u + edx$b_y)
 ```{r, echo=FALSE}
 df <- data.frame(`Included Effects` = c("mu","mu + b_i","mu + b_i + b_u", "mu + b_i + b_u + b_y"),
                  RMSE = c(rmse_mu, rmse_b_i, rmse_b_u, rmse_b_y),
-                 Improvment = c(0,round((rmse_mu - rmse_b_i)*100/rmse_mu,2),
+                 Improvement = c(0,round((rmse_mu - rmse_b_i)*100/rmse_mu,2),
                                 round((rmse_b_i - rmse_b_u)*100/rmse_b_i,2),
                                 round((rmse_b_u - rmse_b_y)*100/rmse_b_u,2)))
 df %>% knitr::kable(caption = "Model Performance; Test Set")
@@ -353,7 +353,7 @@ rmse_b_y_test <- caret::RMSE(validation$rating, mu + validation$b_i + validation
 ```{r, echo=FALSE}
 df <- data.frame(`Included Effects` = c("mu","mu + b_i","mu + b_i + b_u", "mu + b_i + b_u + b_y"),
                  RMSE = c(rmse_mu_test, rmse_b_i_test, rmse_b_u_test, rmse_b_y_test),
-                 Improvment = c(0,round((rmse_mu_test - rmse_b_i_test)*100/rmse_mu_test,2),
+                 Improvement = c(0,round((rmse_mu_test - rmse_b_i_test)*100/rmse_mu_test,2),
                                 round((rmse_b_i_test - rmse_b_u_test)*100/rmse_b_i_test,2),
                                 round((rmse_b_u_test - rmse_b_y_test)*100/rmse_b_u_test,2)))
 df %>% knitr::kable(caption = "Model Performance; Test Set")

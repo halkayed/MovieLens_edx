@@ -80,7 +80,7 @@ rmse_b_y <- caret::RMSE(edx$rating, mu + edx$b_i + edx$b_u + edx$b_y)       # us
 # create a dataframe to show model performance, training set
 training_RMSE <- data.frame(`Included Effects` = c("mu","mu + b_i","mu + b_i + b_u", "mu + b_i + b_u + b_y"),
                             RMSE = c(rmse_mu, rmse_b_i, rmse_b_u, rmse_b_y),
-                            Improvment = c(0,round((rmse_mu - rmse_b_i)*100/rmse_mu,2),
+                            Improvement = c(0,round((rmse_mu - rmse_b_i)*100/rmse_mu,2),
                                            round((rmse_b_i - rmse_b_u)*100/rmse_b_i,2),
                                            round((rmse_b_u - rmse_b_y)*100/rmse_b_u,2)))
 
@@ -112,7 +112,7 @@ rmse_b_y_test <- caret::RMSE(validation$rating, mu + validation$b_i + validation
 
 test_RMSE <- data.frame(`Included Effects` = c("mu","mu + b_i","mu + b_i + b_u", "mu + b_i + b_u + b_y"),
                         RMSE = c(rmse_mu_test, rmse_b_i_test, rmse_b_u_test, rmse_b_y_test),
-                        Improvment = c(0,round((rmse_mu_test - rmse_b_i_test)*100/rmse_mu_test,2),
+                        Improvement = c(0,round((rmse_mu_test - rmse_b_i_test)*100/rmse_mu_test,2),
                                        round((rmse_b_i_test - rmse_b_u_test)*100/rmse_b_i_test,2),
                                        round((rmse_b_u_test - rmse_b_y_test)*100/rmse_b_u_test,2)))
 
