@@ -2,14 +2,14 @@
 title: "edx - Movie Lens Project"
 author: "Hesham Al Kayed"
 date: "12 May 2019"
-header-includes: #allows you to add in your own Latex packages
-- \usepackage{float} #use the 'float' package
-- \floatplacement{figure}{H} #make every figure with caption = h
-output: 
+output:
   pdf_document:
     fig_cap: yes
     keep_tex: yes
-    number_sections: true
+    number_sections: yes
+header-includes:
+- \usepackage{float}
+- \floatplacement{figure}{H}
 geometry: margin=0.25in
 ---
 ```{r include=FALSE, echo=FALSE, cache=TRUE}
@@ -38,7 +38,7 @@ In `Section 3` we build a model based on the effect, or the average error each p
 
 
 # Exploratory data analysis
-## Data Structer
+## Data Structure
 
 &nbsp;&nbsp;&nbsp;
 Examining training set, we find that we have `r nrow(edx)` rows and `r ncol(edx)` columns, `Table.1` shows the header of our dataset,it is logical to assume that each user have one review only for each movie, below code confirms our assumption about the uniqueness  of *usesrId + movieId* by showing no duplicates.
@@ -74,7 +74,7 @@ edx %<>% mutate(year      = str_remove(str_extract(string = title,pattern = "[:d
                 genres    = str_split(genres, pattern = '\\|'))
 ```
 ```{r, echo=FALSE}
-knitr::kable(head(edx), caption = "EDX Header After Formating")
+knitr::kable(head(edx), caption = "EDX Header After Formatting")
 ```
 
 
@@ -86,7 +86,7 @@ sapply(prop.table(table(edx$rating)) * 100 ,function(x) round(x,2)) %>%
   as.data.frame() %>% set_colnames("\\%") %>% t() %>% knitr::kable(caption = "Ratings Summary")
 ```
 
-- __Users tened to rate in whole numbers insted of fractions.__
+- __Users tend to rate in whole numbers instead of fractions.__
 - __Most ratings are above 2.5 .__
 - __Highest rating used is 4.0 followed by 3.0 and 5.0.__
 
@@ -120,7 +120,7 @@ edx%>%
   ggplot(aes(x = N, y = avgR, col=flage)) +
   geom_point(size=0.01)+
   xlab(label = "Number of Reviews Per User")+
-  ylab(label = "Avrage Rating Given By User")+
+  ylab(label = "Average Rating Given By User")+
   geom_hline(yintercept = 2.5, col='black')+
   geom_text(aes(x = 6000, y = 2.6, label=paste(as.character(p[1]),'%',sep = ''), col='black'))+
   geom_text(aes(x = 6000, y = 2.4, label=paste(as.character(p[2]),'%',sep = ''), col='black'))+
@@ -141,7 +141,7 @@ edx %>%
   geom_vline(xintercept = 4.5)+
   geom_text(aes(x = 4.7, y = 2.5, label = paste(as.character( round(mean(flage)*100, 2))    , '%' ,sep = '') , col='black') )+
   geom_text(aes(x = 4.3, y = 2.5, label = paste(as.character(100- round(mean(flage)*100, 2 )), '%' ,sep = ''), col='black') )+
-  xlab(label = "Avrage Rating Given By User" ) +
+  xlab(label = "Average Rating Given By User" ) +
   ylab(label = "User Standard Deviation") +
   guides(color = 'none')
 
@@ -219,10 +219,10 @@ As we can see in `Fig.5`, movie ratings has an average standard deviation of `r 
 
 \newpage
 
-# Buliding Model
-## Formlation
+# Building Model
+## Formulation
 
-I am going to build a model as described in edx - Data Science: Machine Learning - Recommendation Systems. we will set $Y$ as the actual rating, $\mu$ as the over all average, $\epsilon$ as the error or distance from $\mu$. which can be interpreted as, *all moveis should have a rating of* $\mu$, *but for some effect* $\epsilon$, *the rating deviates to* $Y$.
+I am going to build a model as described in edx - Data Science: Machine Learning - Recommendation Systems. we will set $Y$ as the actual rating, $\mu$ as the over all average, $\epsilon$ as the error or distance from $\mu$. which can be interpreted as, *all movies should have a rating of* $\mu$, *but for some effect* $\epsilon$, *the rating deviates to* $Y$.
 $$Y = \mu + \epsilon $$
 from our data exploration we can break $\epsilon$ into *user effect* $b_u$, *movie effect* $b_i$ and *year effect* $b_y$, which leaves us with.
 $$

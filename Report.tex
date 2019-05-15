@@ -160,7 +160,7 @@ parameters will achieve the required model performance.
 
 \section{Exploratory data analysis}\label{exploratory-data-analysis}
 
-\subsection{Data Structer}\label{data-structer}
+\subsection{Data Structure}\label{data-structure}
 
 ~~~ Examining training set, we find that we have 9000055 rows and 6
 columns, \texttt{Table.1} shows the header of our dataset,it is logical
@@ -231,7 +231,7 @@ empty records.
 ~~~
 
 \begin{longtable}[]{@{}rrrlllr@{}}
-\caption{EDX Header After Formating}\tabularnewline
+\caption{EDX Header After Formatting}\tabularnewline
 \toprule
 userId & movieId & rating & timestamp & title & genres &
 year\tabularnewline
@@ -289,7 +289,7 @@ Min. & 1st Qu. & Median & Mean & 3rd Qu. & Max.\tabularnewline
 \begin{itemize}
 \tightlist
 \item
-  \textbf{Users tened to rate in whole numbers insted of fractions.}
+  \textbf{Users tend to rate in whole numbers instead of fractions.}
 \item
   \textbf{Most ratings are above 2.5 .}
 \item
@@ -446,14 +446,14 @@ have a lower deviation compared to below average movies.
 
 \newpage
 
-\section{Buliding Model}\label{buliding-model}
+\section{Building Model}\label{building-model}
 
-\subsection{Formlation}\label{formlation}
+\subsection{Formulation}\label{formulation}
 
 I am going to build a model as described in edx - Data Science: Machine
 Learning - Recommendation Systems. we will set \(Y\) as the actual
 rating, \(\mu\) as the over all average, \(\epsilon\) as the error or
-distance from \(\mu\). which can be interpreted as, \emph{all moveis
+distance from \(\mu\). which can be interpreted as, \emph{all movies
 should have a rating of} \(\mu\), \emph{but for some effect}
 \(\epsilon\), \emph{the rating deviates to} \(Y\).
 \[Y = \mu + \epsilon \] from our data exploration we can break
